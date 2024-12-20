@@ -1,7 +1,6 @@
 import requests
 import json
 import os
-from datetime import datetime
 
 # 네 개의 엔드포인트 URL
 ENDPOINTS = {
@@ -18,7 +17,9 @@ def fetch_data(url):
     """엔드포인트에서 데이터를 가져옵니다."""
     response = requests.get(url)
     if response.status_code == 200:
-        return response.json()
+        # "result" 키가 있다면 해당 데이터만 반환
+        data = response.json()
+        return data.get("result", data)
     else:
         raise Exception(f"Failed to fetch data from {url}. Status code: {response.status_code}")
 
