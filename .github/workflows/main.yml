@@ -1,8 +1,10 @@
 name: Fetch and Update POE2 Data
 
 on:
+  pull_request:
+    types: [opened, synchronize]  # PR 생성 또는 업데이트 시 실행
   schedule:
-    - cron: "0 3,15 * * *"  # 매일 자정,정오 KST 기준 실행
+    - cron: "0 15,3 * * *"  # KST 기준 자정(00:00)과 정오(12:00)에 실행
 
 jobs:
   fetch-and-update:
@@ -24,15 +26,24 @@ jobs:
       run: pip install requests
 
     # 4. 데이터 가져오기 및 저장
-    - name: Fetch and save POE2 data
-      run: |
-        python fetch_and_save.py
+    - name: Fetch and save POE data
+      run: python fetch_and_save.py
 
-    # 5. 변경 사항 커밋 및 푸시
-    - name: Commit and push changes
+    # 5. 변경 사항 확인
+    - name: Check for changes
       run: |
-        git config --local user.name "github-actions[bot]"
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        if git diff --quiet; then
+          echo "No changes detected. Skipping commit and push."
+          exit 0
+        fi
+        echo "Changes detected."
+
+    # 6. 변경 사항 푸시 (변경된 경우에만 실행)
+    - name: Commit and push changes
+      if: success()  # 위 단계에서 변경이 감지된 경우에만 실행
+      run: |
         git add data/*.json
-        git commit -m "Update POE data $(date -u)"
+        git commit -m "Update POE2 data $(date -u)"
         git push
