@@ -5,6 +5,7 @@ on:
     types: [opened, synchronize]  # PR 생성 또는 업데이트 시 실행
   schedule:
     - cron: "0 15,3 * * *"  # KST 기준 자정(00:00)과 정오(12:00)에 실행
+  workflow_dispatch:
 
 jobs:
   fetch-and-update:
