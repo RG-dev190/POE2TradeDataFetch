@@ -24,7 +24,7 @@ jobs:
       run: pip install requests
 
     # 4. 데이터 가져오기 및 저장
-    - name: Fetch and save POE data
+    - name: Fetch and save POE2 data
       run: |
         python fetch_and_save.py
 
